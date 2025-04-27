@@ -52,12 +52,80 @@ class LinkedList # rubocop:disable Style/Documentation
       @tail = tmp           # make the second to the last node the new tail
       @tail.next_node = nil # remove the last node of the list that's about to be popped
       @size -= 1            # reduce the size of the list
-      value                 # return/pop the last node
+      value                 # return/pop the last node's value
     end
   end
 
   def contains(value)
-    
+    tmp = @head
+    until tmp.nil?
+      return true if value == tmp.value
+
+      tmp = tmp.next_node
+    end
+    false
+  end
+
+  def find(value)
+    count = 0
+    tmp = @head
+
+    until tmp.nil?
+      return count if value == tmp.value
+
+      tmp = tmp.next_node
+      count += 1
+    end
+    nil
+  end
+
+  def to_s
+    tmp = @head
+    result = []
+    until tmp.nil?
+      result << "( #{tmp.value} )"
+      tmp = tmp.next_node
+    end
+    result << "( nil )" # append the nil representing the last node value
+    puts result.join(" -> ")
+  end
+
+  def insert_at(value, index)
+    return nil if @size.zero? || index >= @size
+
+    if index.zero?
+      prepend(value)
+    else
+      tmp = @head
+      (index - 1).times do # move to the node before the index
+        tmp = tmp.next_node
+      end
+    end
+
+    new_node = Node.new(value, tmp.next_node)
+    tmp.next_node = new_node
+    @size += 1
+  end
+
+  def remove_at(index)
+    return nil if @size.zero? || index >= @size
+
+    if index.zero?
+      @head = @head.next_node
+    else
+      tmp = @head
+      (index - 1).times do
+        tmp = tmp.next_node
+      end
+
+      # Removing the node at the specified index
+      tmp.next_node = tmp.next_node.next_node
+
+      # if we removed the last node, update the tail
+      @tail = tmp if tmp.next_node.nil?
+    end
+
+    @size -= 1
   end
 
   class Node # rubocop:disable Style/Documentation
@@ -82,3 +150,10 @@ list.append("three")
 puts list.size
 puts list.pop
 puts list.size
+p list.find("two")
+p list.find("one")
+list.to_s
+list.insert_at("five", 1)
+list.to_s
+list.remove_at(2)
+list.to_s
